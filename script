@@ -37,21 +37,22 @@ cat > /etc/systemd/system/docker.service.d/http-proxy.conf << EOF
 [Service]
 Environment="HTTP_PROXY=http://172.19.1.179:3128"
 Environment="HTTPS_PROXY=http://172.19.1.179:3128"
-Environment="NO_PROXY=127.0.0.1,localhost,192.168.0.0/24"
+Environment="NO_PROXY=127.0.0.1,localhost,192.168.0.0/24,10.250.0.0/48"
 EOF
 
 systemctl daemon-reload
 systemctl restart docker
 
-cat > /etc/systemd/system/docker.service.d/http-proxy.conf << EOF
-[Service]
-Environment="HTTP_PROXY=http://172.19.1.179:808"
-Environment="HTTPS_PROXY=http://172.19.1.179:808"
-Environment="NO_PROXY=127.0.0.1,localhost
-EOF
+# set proxy for CCproxy
+# cat > /etc/systemd/system/docker.service.d/http-proxy.conf << EOF
+# [Service]
+# Environment="HTTP_PROXY=http://172.19.1.179:808"
+# Environment="HTTPS_PROXY=http://172.19.1.179:808"
+# Environment="NO_PROXY=127.0.0.1,localhost,10.250.0.0/48"
+# EOF
 
-systemctl daemon-reload
-systemctl restart docker
+# systemctl daemon-reload
+# systemctl restart docker
 
 
 
