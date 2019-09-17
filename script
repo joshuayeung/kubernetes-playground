@@ -113,6 +113,7 @@ systemctl enable docker.service
 
 
 
+# script to clear all rancher related container
 #!/bin/sh
 docker rm -f $(docker ps -qa)
 docker volume rm $(docker volume ls -q)
