@@ -11,11 +11,12 @@ setenforce 0
 sed -i 's/^SELINUX=enforcing$/SELINUX=disabled/' /etc/selinux/config
 sudo sysctl -p
 
+
 # stop firewalld
 sudo systemctl stop firewalld
 sudo systemctl disable firewalld
 sudo systemctl mask --now firewalld
-
+sudo sysctl -p
 
 # Install Docker CE
 ## Set up the repository
@@ -44,11 +45,12 @@ cat > /etc/systemd/system/docker.service.d/http-proxy.conf << EOF
 [Service]
 Environment="HTTP_PROXY=http://172.19.1.179:3128"
 Environment="HTTPS_PROXY=http://172.19.1.179:3128"
-Environment="NO_PROXY=127.0.0.1,localhost,192.168.0.0/24,10.250.0.0/48"
 EOF
 
 systemctl daemon-reload
 systemctl restart docker
+
+# Environment="NO_PROXY=127.0.0.1,localhost,192.168.0.0/24,10.250.0.0/48"
 
 # set proxy for CCproxy
 # cat > /etc/systemd/system/docker.service.d/http-proxy.conf << EOF
@@ -135,8 +137,9 @@ docker run -d --restart=unless-stopped \
   -p 80:80 -p 443:443 \
   -e HTTP_PROXY="http://172.19.1.179:3128" \
   -e HTTPS_PROXY="http://172.19.1.179:3128" \
-  -e NO_PROXY="localhost,127.0.0.1,0.0.0.0,192.168.0.0/24" \
   rancher/rancher
   
+  
+# -e NO_PROXY="localhost,127.0.0.1,0.0.0.0,192.168.0.0/24" \
   
   sudo docker run -d --privileged --restart=unless-stopped --net=host -v /etc/kubernetes:/etc/kubernetes -v /var/run:/var/run rancher/rancher-agent:v2.2.8 --server https://192.168.0.73 --token cgsfxqv28tqxl6fsws2b5kjdqvf8jhl5s4qm6qvwnflqlpcgvdxtvw --ca-checksum d0a4d6a85c562e1374d94da326f2d8f969a020f62ed962f2b89acae281eac6bf --worker
