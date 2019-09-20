@@ -1,16 +1,12 @@
 # Setup Proxy
+export {http,https,ftp}_proxy="http://172.19.1.179:3128"
 echo 'export {http,https,ftp}_proxy="http://172.19.1.179:3128"' >> /etc/profile
-
-
-
-
 echo 'proxy=http://172.19.1.179:3128' >> /etc/yum.conf
 
 # Set SELinux in permissive mode (effectively disabling it)
 setenforce 0
 sed -i 's/^SELINUX=enforcing$/SELINUX=disabled/' /etc/selinux/config
 sudo sysctl -p
-
 
 # stop firewalld
 sudo systemctl stop firewalld
@@ -35,8 +31,6 @@ sudo yum update -y && yum install -y docker-ce docker-ce-cli containerd.io
 # Start Docker
 sudo systemctl start docker
 
-
-
 # set docker-proxy
 
 mkdir -p /etc/systemd/system/docker.service.d
@@ -49,20 +43,8 @@ Environment="NO_PROXY=127.0.0.1,localhost,172.17.0.1,192.168.0.0/24"
 EOF
 
 systemctl daemon-reload
+
 systemctl restart docker
-
-# Environment="NO_PROXY=127.0.0.1,localhost,192.168.0.0/24,10.250.0.0/48"
-
-# set proxy for CCproxy
-# cat > /etc/systemd/system/docker.service.d/http-proxy.conf << EOF
-# [Service]
-# Environment="HTTP_PROXY=http://172.19.1.179:808"
-# Environment="HTTPS_PROXY=http://172.19.1.179:808"
-# Environment="NO_PROXY=127.0.0.1,localhost,10.250.0.0/48"
-# EOF
-
-# systemctl daemon-reload
-# systemctl restart docker
 
 # Disable swap
 swapoff -a
@@ -167,3 +149,7 @@ helm install \
 --namespace operator \
 --set operator.enabled=true \
 ./confluent-operator
+
+
+# install local-path-provisioner
+kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
