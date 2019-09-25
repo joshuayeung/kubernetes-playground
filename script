@@ -153,3 +153,6 @@ helm install \
 
 # install local-path-provisioner
 kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
+
+# SSH Login Slow - Removing Delay
+# https://www.shellhacks.com/ssh-login-slow-remove-delay/
