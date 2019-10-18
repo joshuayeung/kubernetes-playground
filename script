@@ -156,3 +156,7 @@ kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisione
 
 # SSH Login Slow - Removing Delay
 # https://www.shellhacks.com/ssh-login-slow-remove-delay/
+
+sed -i -e 's/#UseDNS no/UseDNS no/g' /etc/ssh/sshd_config
+sed -i -e 's/GSSAPIAuthentication yes/GSSAPIAuthentication no/g' /etc/ssh/sshd_config
+service sshd restart
