@@ -62,12 +62,12 @@ systemctl daemon-reload
 systemctl restart docker
 
 # Disable swap
-swapoff -a
-sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+# swapoff -a
+# sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 # Disable swap in sysctl.conf
-sudo echo "vm.swappiness=0" | sudo tee --append /etc/sysctl.conf
+# sudo echo "vm.swappiness=0" | sudo tee --append /etc/sysctl.conf
 # Apply configuration changes without reboot.
-sudo sysctl -p
+# sudo sysctl -p
 
 ## Create /etc/docker directory.
 mkdir /etc/docker
