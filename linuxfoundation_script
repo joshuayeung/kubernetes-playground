@@ -1,0 +1,12 @@
+wget https://training.linuxfoundation.org/cm/LFD259/LFD259_V2019-11-05_SOLUTIONS.tar.bz2 --user=LFtraining --password=Penguin2014
+tar -xvf LFD259_V2019-11-05_SOLUTIONS.tar.bz2
+
+find ~ -name k8sMaster.sh
+cp /home/joshua_chyeung/LFD259/SOLUTIONS/s_02/k8sMaster.sh .
+bash k8sMaster.sh | tee ~/master.out
+
+find ~ -name k8sSecond.sh
+cp /home/joshua_chyeung/LFD259/SOLUTIONS/s_02/k8sSecond.sh .
+bash k8sSecond.sh | tee ~/second.out
+
+sudo kubeadm join 10.170.0.16:6443 --token 4cy4tl.tpj4tmfkko3ovnjz --discovery-token-ca-cert-hash sha256:4f8f9896c05cf03dd3bd8395d286754cb671a9a0e7bed0c2367e49af9011cc70 
