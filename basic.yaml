@@ -10,3 +10,5 @@ spec:
     image: nginx
     ports:
     - containerPort: 80 #expose port 80
+  - name: fdlogger
+    image: fluent/fluentd #add a second container to the pod to handle logging, act as a sidecar
