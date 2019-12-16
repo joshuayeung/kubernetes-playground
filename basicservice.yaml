@@ -5,6 +5,7 @@ metadata:
 spec:
     selector:
         type: webserver
+    type: NodePort #expose the service to outside the cluster
     ports:
     - protocol: TCP
-      port: 80
+      port: 80 #expose the pod to other nodes and pods in the cluster
