@@ -10,3 +10,7 @@ cp /home/joshua_chyeung/LFD259/SOLUTIONS/s_02/k8sSecond.sh .
 bash k8sSecond.sh | tee ~/second.out
 
 sudo kubeadm join 10.170.0.16:6443 --token 4cy4tl.tpj4tmfkko3ovnjz --discovery-token-ca-cert-hash sha256:4f8f9896c05cf03dd3bd8395d286754cb671a9a0e7bed0c2367e49af9011cc70 
+
+sudo apt-get install bash-completion vim -y
+source <(kubectl completion bash)
+echo "source <(kubectl completion bash)" >> ~/.bashrc
