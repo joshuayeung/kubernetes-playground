@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.7.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: app
+  name: app
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: app
+    spec:
+      containers:
+      - image: nextcloud:fpm
+        name: app-server
+        resources: {}
+        stdin: true
+        tty: true
+        volumeMounts:
+        - mountPath: /var/www/html
+          name: app-data
+      restartPolicy: Always
+      volumes:
+      - name: app-data
+        persistentVolumeClaim:
+          claimName: app-data
+status: {}

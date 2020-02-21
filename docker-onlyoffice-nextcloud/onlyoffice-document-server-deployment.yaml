@@ -1,0 +1,40 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.7.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: onlyoffice-document-server
+  name: onlyoffice-document-server
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: onlyoffice-document-server
+    spec:
+      containers:
+      - image: onlyoffice/documentserver:latest
+        name: onlyoffice-document-server
+        resources: {}
+        stdin: true
+        tty: true
+        volumeMounts:
+        - mountPath: /var/www/onlyoffice/Data
+          name: document-data
+        - mountPath: /var/log/onlyoffice
+          name: document-log
+      restartPolicy: Always
+      volumes:
+      - name: document-data
+        persistentVolumeClaim:
+          claimName: document-data
+      - name: document-log
+        persistentVolumeClaim:
+          claimName: document-log
+status: {}
