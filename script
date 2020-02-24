@@ -43,7 +43,7 @@ Environment="HTTPS_PROXY=http://172.19.1.179:3128"
 Environment="NO_PROXY=127.0.0.1,localhost,172.17.0.1,192.168.0.0/24"
 EOF
 
-cat > /etc/docker/config.json << EOF
+cat > ~/.docker/config.json << EOF
 {
  "proxies":
  {
@@ -199,3 +199,11 @@ kubectl patch svc collabora-code -n collabora-code -p '{"spec": {"type": "NodePo
 # install docker-compose
 sudo curl -x 'http://172.19.1.179:3128' -L "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
+
+
+# install filebeat
+docker run \
+docker.elastic.co/beats/filebeat:7.6.0 \
+setup -E setup.kibana.host=kibana:5601 \
+-E output.elasticsearch.hosts=["elasticsearch:9200"]  
+
