@@ -144,7 +144,7 @@ for dir in $cleanupdirs; do
 done
 
 
-docker run -d --restart=unless-stopped \
+sudo docker run -d --restart=unless-stopped \
   -p 80:80 -p 443:443 \
   -e HTTP_PROXY="http://172.19.1.179:3128" \
   -e HTTPS_PROXY="http://172.19.1.179:3128" \
@@ -175,3 +175,9 @@ kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisione
 sed -i -e 's/#UseDNS no/UseDNS no/g' /etc/ssh/sshd_config
 sed -i -e 's/GSSAPIAuthentication yes/GSSAPIAuthentication no/g' /etc/ssh/sshd_config
 service sshd restart
+
+
+
+# install kompose
+sudo yum install epel-release
+sudo yum -y install kompose
