@@ -1,0 +1,11 @@
+# deploy Kubernetes clusters using scripts provided by Linux Foundation
+
+# install text editor
+sudo apt-get install bash-completion vim -y
+
+# configure command line completion
+source <(kubectl completion bash)
+echo "source <(kubectl completion bash)" >> ~/.bashrc
+
+
+curl -L https://bit.ly/2tN0bEa -o kompose
