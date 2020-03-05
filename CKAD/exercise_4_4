@@ -1,0 +1,24 @@
+# Create and work with labels. We will understand how the deployment, replicaSet, and pod labels interact.
+kubectl create deployment design2 --image=nginx
+
+# SELECTOR should be app=design2
+kubectl get deployments.apps design2 -o wide
+
+# Using selector -l
+kubectl get -l app=design2 pod
+
+# 
+kubectl get --selector app=design2 pod -o yaml
+
+# Edit the pod label from design2 to orange
+kubectl edit pod design2-766d48574f-fxx4s
+
+# Still one pod in the deployment
+kubectl get deployments.apps design2 -o wide
+
+# Should be two pods (one you edited, one deployment recreated)
+kubectl get pods | grep design2
+
+# Delete the deployment and you'll find that the pod whose label edited remains
+kubectl delete deployment design2
+kubectl get pods | grep design2
