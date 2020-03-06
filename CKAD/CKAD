@@ -9,3 +9,7 @@ echo "source <(kubectl completion bash)" >> ~/.bashrc
 
 
 curl -L https://bit.ly/2tN0bEa -o kompose
+
+
+ sudo vim /etc/docker/daemon.json
+ { "insecure-registries":["10.110.186.162:5000"] }
