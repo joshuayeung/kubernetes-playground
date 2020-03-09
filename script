@@ -211,3 +211,10 @@ docker.elastic.co/beats/filebeat:7.6.0 \
 setup -E setup.kibana.host=kibana:5601 \
 -E output.elasticsearch.hosts=["elasticsearch:9200"]  
 
+# download docker-compose
+sudo curl -L "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-$(uname -s)-$(uname -m)" -x 172.19.1.179:3128 -o /usr/local/bin/docker-compose
+
+yum install -y git
+
+# install helm
+curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
