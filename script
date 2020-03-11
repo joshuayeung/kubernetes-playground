@@ -218,3 +218,6 @@ yum install -y git
 
 # install helm
 curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+
+# install longhorn
+yum install iscsi-initiator-utils
