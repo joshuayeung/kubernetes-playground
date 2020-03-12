@@ -221,3 +221,13 @@ curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bas
 
 # install longhorn
 yum install iscsi-initiator-utils
+
+# extend volume to /dev/mapper/root
+fdisk /dev/vda
+
+partprobe
+pvcreate /dev/vda3
+vgextend centos /dev/vda3
+lvextend -l 100%FREE /dev/mapper/centos-root
+xfs_growfs /dev/mapper/centos-root
+df -h
