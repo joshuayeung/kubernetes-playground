@@ -1,0 +1,70 @@
+# Monitoring Linux Host Metrics With the Node Exporter
+export {http,https,ftp}_proxy="http://172.19.1.179:3128"
+export no_proxy="127.0.0.1,localhost,172.17.0.1,192.168.0.0/24"
+wget https://github.com/prometheus/node_exporter/releases/download/v0.18.1/node_exporter-0.18.1.linux-amd64.tar.gz
+tar xvfz node_exporter-0.18.1.linux-amd64.tar.gz
+cd node_exporter-0.18.1.linux-amd64
+./node_exporter &
+
+
+
+wget https://github.com/prometheus/mysqld_exporter/releases/download/v0.12.1/mysqld_exporter-0.12.1.linux-amd64.tar.gz
+tar xvfz mysqld_exporter-0.12.1.linux-amd64.tar.gz
+cd mysqld_exporter-0.12.1.linux-amd64
+./mysqld_exporter &
+
+# kill node_exporter
+fuser -k 9100/tcp
+
+# https://www.howtoforge.com/tutorial/how-to-install-prometheus-and-node-exporter-on-centos-8/
+# Configure Node Exporter As a Systemd Service
+cat > /etc/systemd/system/node_exporter.service << EOF
+[Unit]
+Description=Node Exporter
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=root
+ExecStart=/root/node_exporter-0.18.1.linux-amd64/node_exporter
+
+[Install]
+WantedBy=default.target
+EOF
+
+# reload systemd and enable it
+systemctl daemon-reload
+systemctl start node_exporter
+systemctl enable node_exporter
+
+# check status
+systemctl status node_exporter
+netstat -plntu
+
+# Configure Firewalld
+firewall-cmd --add-port=9100/tcp --permanent
+firewall-cmd --reload
+
+firewall-cmd --list-all
+
+cat > /etc/.argconf
+--web.listen-address=":39100"
+
+# Configure Node Exporter As a Systemd Service
+cat > /etc/systemd/system/node_exporter.service << EOF
+[Unit]
+Description=Node Exporter
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=root
+ExecStart=/root/node_exporter-0.18.1.linux-amd64/node_exporter --web.listen-address=":39100"
+
+[Install]
+WantedBy=default.target
+EOF
+
+
+# wim-exporter
+# https://devconnected.com/windows-server-monitoring-using-prometheus-and-wmi-exporter/
