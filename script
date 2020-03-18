@@ -1,6 +1,8 @@
 # Setup Proxy
 export {http,https,ftp}_proxy="http://172.19.1.179:3128"
+export no_proxy="127.0.0.1,localhost,172.17.0.1,192.168.0.0/24"
 echo 'export {http,https,ftp}_proxy="http://172.19.1.179:3128"' >> /etc/profile
+echo 'export no_proxy="127.0.0.1,localhost,172.17.0.1,192.168.0.0/24"' >> /etc/profile
 echo 'proxy=http://172.19.1.179:3128' >> /etc/yum.conf
 
 # Set SELinux in permissive mode (effectively disabling it)
