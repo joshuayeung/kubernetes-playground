@@ -1,0 +1,118 @@
+# Let us begin by adding shared storage to each container. We will use the hostPath storage class to provide the PV and PVC. First we create the directory.
+sudo mkdir /tmp/weblog
+
+# Now we create a new PV to use that directory for the hostPath storage class. We will use the storageClassName of manual so that only PVCs which use that name will bind the resource.
+cat > weblog-pv.yaml << EOF
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: weblog-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp/weblog"
+EOF
+# Create and verify the new PV exists.
+kubectl create -f weblog-pv.yaml
+kubectl get pv weblog-pv-volume
+
+# Next we will create a PVC to use the PV we just created.
+cat > weblog-pvc.yaml << EOF
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: weblog-pv-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+EOF
+
+# Create the PVC and verify it shows as Bound to the the PV we previously created.
+kubectl create -f weblog-pvc.yaml
+kubectl get pvc weblog-pv-claim
+
+# We are ready to add the storage to our pod. We will edit three sections. The first will declare the storage to the pod in general, then two more sections which tell each container where to make the volume available.
+cat > basic.yaml << EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: basicpod
+  labels:
+    type: webserver
+spec:
+  volumes:
+    - name: weblog-pv-storage
+      persistentVolumeClaim:
+        claimName: weblog-pv-claim
+    - name: log-config
+      configMap:
+        name: fluentd-config
+  containers:
+  - name: webcont
+    image: nginx
+    ports:
+    - containerPort: 80
+    volumeMounts:
+      - mountPath: "/var/log/nginx/"
+        name: weblog-pv-storage
+  - name: fdlogger
+    image: fluent/fluentd
+    env:
+    - name: FLUENTD_ARGS
+      value: -c /etc/fluentd-config/fluentd.conf
+    volumeMounts:
+      - mountPath: "/var/log"
+        name: weblog-pv-storage
+      - name: log-config
+        mountPath: "/etc/fluentd-config"
+EOF
+
+# At this point we can create the pod again. When we create a shell we will find that the access.log for nginx is no longer a symbolic link pointing to stdout it is a writable, zero length file. Leave a tailf of the log file running.
+kubectl create -f basic.yaml
+
+kubectl exec -c webcont -it basicpod -- /bin/bash
+
+# On Container
+# root@basicpod:/# ls -l /var/log/nginx/access.log
+# -rw-r--r-- 1 root root 0 Oct 18 16:12 /var/log/nginx/access.log
+# root@basicpod:/# tail -f /var/log/nginx/access.log
+
+kubectl get pods -o wide
+
+curl http
+
+cat > weblog-configmap.yaml << EOF
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd-config
+data:
+  fluentd.conf: |
+    <source>
+      @type tail
+      format none
+      path /var/log/nginx/access.log
+      tag count.format1
+    </source>
+
+    <match *.**>
+      @type forward
+
+      <server>
+        name localhost
+        host 127.0.0.1
+      </server>
+    </match>
+EOF
+
+kubectl create -f weblog-configmap.yaml
