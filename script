@@ -1,8 +1,15 @@
 # Setup Proxy
+export {HTTP,HTTPS,FTP}_PROXY="http://172.19.1.179:3128"
+export NO_PROXY="localhost,127.0.0.1,0.0.0.0,172.17.0.1"
+export NO_PROXY=${NO_PROXY},$(echo 192.168.0.{1..255} | sed 's/ /,/g')
+
+,$(echo 10.{1..255}.{1..255}.{1..255} | sed 's/ /,/g')
 export {http,https,ftp}_proxy="http://172.19.1.179:3128"
-export no_proxy="127.0.0.1,localhost,172.17.0.1,192.168.0.0/24"
+export no_proxy="localhost,127.0.0.1,0.0.0.0,172.17.0.1,10.0.0.0/8,192.168.0.0/24"
 echo 'export {http,https,ftp}_proxy="http://172.19.1.179:3128"' >> /etc/profile
-echo 'export no_proxy="127.0.0.1,localhost,172.17.0.1,192.168.0.0/24"' >> /etc/profile
+echo 'export no_proxy="localhost,127.0.0.1,0.0.0.0,172.17.0.1,10.0.0.0/8,192.168.0.0/24"' >> /etc/profile
+echo 'export {HTTP,HTTPS,FTP}_PROXY="http://172.19.1.179:3128"' >> /etc/profile
+echo 'export NO_PROXY="localhost,127.0.0.1,0.0.0.0,172.17.0.1,10.0.0.0/8,192.168.0.0/24"' >> /etc/profile
 echo 'proxy=http://172.19.1.179:3128' >> /etc/yum.conf
 
 # Set SELinux in permissive mode (effectively disabling it)
@@ -229,6 +236,8 @@ fdisk /dev/vda
 
 partprobe
 pvcreate /dev/vda3
+pvdisplay
+vgdisplay
 vgextend centos /dev/vda3
 lvextend -l 100%FREE /dev/mapper/centos-root
 xfs_growfs /dev/mapper/centos-root
