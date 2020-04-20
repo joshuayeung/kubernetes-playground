@@ -12,6 +12,10 @@ echo 'export {HTTP,HTTPS,FTP}_PROXY="http://172.19.1.179:3128"' >> /etc/profile
 echo 'export NO_PROXY="localhost,127.0.0.1,0.0.0.0,172.17.0.1,10.0.0.0/8,192.168.0.0/24"' >> /etc/profile
 echo 'proxy=http://172.19.1.179:3128' >> /etc/yum.conf
 
+
+printf -v no_proxy '%s,' 192.168.0.{1..255};
+export no_proxy="${no_proxy%,}";
+
 # Set SELinux in permissive mode (effectively disabling it)
 setenforce 0
 sed -i 's/^SELINUX=enforcing$/SELINUX=disabled/' /etc/selinux/config
@@ -167,7 +171,7 @@ sudo docker run -d --restart=unless-stopped \
   -p 80:80 -p 443:443 \
   -e HTTP_PROXY="http://172.19.1.179:3128" \
   -e HTTPS_PROXY="http://172.19.1.179:3128" \
-  -e NO_PROXY="localhost,127.0.0.1,0.0.0.0,172.17.0.1,192.168.0.0/24" \
+  -e NO_PROXY="localhost,127.0.0.1,0.0.0.0,10.0.0.0/8,192.168.0.0/24" \
   rancher/rancher
   
   
@@ -242,3 +246,18 @@ vgextend centos /dev/vda3
 lvextend -l 100%FREE /dev/mapper/centos-root
 xfs_growfs /dev/mapper/centos-root
 df -h
+
+
+# cert
+# Install the ca-certificates package
+# Enable the dynamic CA configuration feature
+# Add it as a new file to /etc/pki/ca-trust/source/anchors/
+# Use command
+
+yum install ca-certificates
+update-ca-trust force-enable
+cp apimlb_ca.cer /etc/pki/ca-trust/source/anchors/
+update-ca-trust extract
+
+
+curl -i -k --cert server.cer --pass Changeme_123 --key server_key.pem -H 'Content-type:application/json;charset=utf8' -d '{"grantType":"password","userName":"NBI_test","value":"Cmhk2@20"}' -X PUT https://10.96.128.91:26335/rest/plat/smapp/v1/oauth/token
